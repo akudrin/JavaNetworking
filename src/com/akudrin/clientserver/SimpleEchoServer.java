@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class SimpleEchoServer {
 	public static void main(String[] args) {
@@ -16,11 +18,25 @@ public class SimpleEchoServer {
 			System.out.println("Connected to client");
 			try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 					PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-				String inputLine;
-				while ((inputLine = br.readLine()) != null) {
-					System.out.println("Server: " + inputLine);
-					out.println(inputLine);
-				}
+				/*
+				 * String inputLine; while ((inputLine = br.readLine()) != null) {
+				 * System.out.println("Server: " + inputLine); out.println(inputLine); }
+				 */
+
+				// Java 8
+				Supplier<String> socketInput = () -> {
+					try {
+						return br.readLine();
+					} catch (IOException ex) {
+						return null;
+					}
+				};
+				Stream<String> stream = Stream.generate(socketInput);
+				stream.map(s -> {
+					System.out.println("Client request: " + s);
+					out.println(s);
+					return s;
+				}).allMatch(s -> s != null);
 			} catch (IOException ex) {
 				// Handle exceptions
 			}

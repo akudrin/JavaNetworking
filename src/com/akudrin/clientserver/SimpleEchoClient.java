@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class SimpleEchoClient {
 	public static void main(String args[]) {
@@ -19,16 +21,21 @@ public class SimpleEchoClient {
 					BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
 				System.out.println("Connected to server");
 				Scanner scanner = new Scanner(System.in);
-				while (true) {
+				/*
+				 * while (true) { System.out.print("Enter text: "); String inputLine =
+				 * scanner.nextLine(); if ("quit".equalsIgnoreCase(inputLine)) { break; }
+				 * out.println(inputLine); String response = br.readLine();
+				 * System.out.println("Server response: " + response); }
+				 */
+				// Java 8
+				Supplier<String> scannerInput = () -> scanner.next();
+				System.out.print("Enter text: ");
+				Stream.generate(scannerInput).map(s -> {
+					out.println(s);
+					System.out.println("Server response: " + s);
 					System.out.print("Enter text: ");
-					String inputLine = scanner.nextLine();
-					if ("quit".equalsIgnoreCase(inputLine)) {
-						break;
-					}
-					out.println(inputLine);
-					String response = br.readLine();
-					System.out.println("Server response: " + response);
-				}
+					return s;
+				}).allMatch(s -> !"quit".equalsIgnoreCase(s));
 			}
 		} catch (IOException ex) {
 			// Handle exceptions

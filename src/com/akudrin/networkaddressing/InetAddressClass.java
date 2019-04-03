@@ -11,7 +11,13 @@ public class InetAddressClass {
 		System.out.println("CanonicalHostName: " + address.getCanonicalHostName());
 		System.out.println("HostAddress: " + address.getHostAddress());
 		System.out.println("HostName: " + address.getHostName());
-		System.out.println(address.isReachable(10000));
+		//System.out.println(address.isReachable(10000));
+		
+		
+		InetAddress localAddress = InetAddress.getLocalHost();
+		System.out.println("Local Host Name: " + localAddress.getHostName());
+		System.out.println("Local Host: " + InetAddress.getLocalHost());
+		System.out.println("Local Host Address: " + localAddress.getHostAddress());
 	}
 
 }
