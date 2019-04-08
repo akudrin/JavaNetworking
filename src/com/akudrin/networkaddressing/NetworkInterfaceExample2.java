@@ -38,6 +38,14 @@ public class NetworkInterfaceExample2 {
 		NetworkInterface network = NetworkInterface.getByInetAddress(address);
 		System.out.println("MAC address: " + getMACIdentifier(network));
 
+		System.out.println();
+
+		interfaceEnum = NetworkInterface.getNetworkInterfaces();
+		System.out.println("Name MAC Address");
+		Collections.list(interfaceEnum).stream().forEach((inetAddress) -> {
+			System.out.printf("%-6s %s\n", inetAddress.getName(), getMACIdentifier(inetAddress));
+		});
+
 	}
 
 	public static String getMACIdentifier(NetworkInterface network) {
