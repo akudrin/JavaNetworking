@@ -1,6 +1,9 @@
 package com.akudrin.httpserver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -17,7 +20,7 @@ public class MyHTTPServer {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
 			System.out.println(exchange.getRemoteAddress());
-			String response = new MyHTTPServer().getResponse();
+			String response = getResponse();
 			System.out.println(response);
 			exchange.sendResponseHeaders(200, response.length());
 			OutputStream out = exchange.getResponseBody();
@@ -29,6 +32,26 @@ public class MyHTTPServer {
 	static class DetailHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
+			String requestMethod = exchange.getRequestMethod();
+			System.out.println(requestMethod);
+
+			InputStream in = exchange.getRequestBody();
+			if (in != null) {
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(in));) {
+					String inputLine;
+					StringBuilder response = new StringBuilder();
+					while ((inputLine = br.readLine()) != null) {
+						response.append(inputLine);
+					}
+					br.close();
+					System.out.println(inputLine);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			} else {
+				System.out.println("Request body is empty");
+			}
+
 			Headers requestHeaders = exchange.getRequestHeaders();
 			Set<String> keySet = requestHeaders.keySet();
 			for (String key : keySet) {
@@ -39,7 +62,7 @@ public class MyHTTPServer {
 		}
 	}
 
-	public String getResponse() {
+	public static String getResponse() {
 		StringBuilder responseBuffer = new StringBuilder();
 		responseBuffer.append("<html><h1>HTTPServer Home Page…. </h1><br>")
 				.append("<b>Welcome to the new and improved web " + "server!</b><BR>").append("</html>");
@@ -48,7 +71,7 @@ public class MyHTTPServer {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("MyHTTPServer Started");
-		HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
+		HttpServer server = HttpServer.create(new InetSocketAddress(3000), 0);
 		// server.createContext("/index", new MyHTTPServer.IndexHandler());
 		server.createContext("/index", new DetailHandler());
 		server.start();
