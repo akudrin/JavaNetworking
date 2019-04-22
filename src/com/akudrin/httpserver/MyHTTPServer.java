@@ -23,6 +23,7 @@ public class MyHTTPServer {
 			String response = getResponse();
 			System.out.println(response);
 			exchange.sendResponseHeaders(200, response.length());
+
 			OutputStream out = exchange.getResponseBody();
 			out.write(response.toString().getBytes());
 			out.close();
@@ -32,6 +33,14 @@ public class MyHTTPServer {
 	static class DetailHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
+
+			Headers responseHeaders = exchange.getResponseHeaders();
+			String responseMessage = getResponse();
+			responseHeaders.set("Content-Type", "text/html");
+			responseHeaders.set("Server", "MyHTTPServer/1.0");
+			responseHeaders.set("Set-cookie", "userID=Cookie Monster");
+			exchange.sendResponseHeaders(200, responseMessage.getBytes().length);
+
 			String requestMethod = exchange.getRequestMethod();
 			System.out.println(requestMethod);
 
@@ -59,6 +68,16 @@ public class MyHTTPServer {
 				String header = key + " = " + values.toString() + "\n";
 				System.out.print(header);
 			}
+
+			Set<String> responseHeadersKeySet = responseHeaders.keySet();
+			responseHeadersKeySet.stream().map((key) -> {
+				List values = responseHeaders.get(key);
+				String header = key + " = " + values.toString() + "\n";
+				return header;
+			}).forEach((header) -> {
+				System.out.print(header);
+			});
+
 		}
 	}
 
