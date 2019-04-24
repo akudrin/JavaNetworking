@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/Users/andreikudrin/Desktop/Eclipse/http-2.2.1.jar"/>
 	<classpathentry kind="lib" path="/Users/andreikudrin/Desktop/Eclipse/bcprov-jdk15on-161.jar"/>
+	<classpathentry kind="lib" path="/Users/andreikudrin/Desktop/Eclipse/FreePastry-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
